@@ -2,6 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Scrollbar personnalisée pour l'application */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #18181b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8b5cf6;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -53,7 +71,24 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+css[data-radix-popper-content-wrapper] {
+  --tw-text-opacity: 1;
+}
+
+.select-item-text {
+  color: white !important;
+}
+
+[role='option'] {
+  color: white;
+}
+
+[role='listbox'] {
+  color: white;
 }

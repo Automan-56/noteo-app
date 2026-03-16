@@ -17,7 +17,7 @@ export interface Grade {
   subject_id: string
   title: string
   value: number
-  max_value: number | null
+  grade_max: number
   coefficient: number
   grade_type: GradeType
   date: string
@@ -38,9 +38,9 @@ export interface GradeInput {
   subject_id: string
   title: string
   value: number
-  max_value?: number | null
+  grade_max?: number
   coefficient: number
-  grade_type: GradeType
+  grade_type?: GradeType
   date: string
   comment?: string
 }
@@ -61,7 +61,7 @@ type GradePayload = {
   subject_id?: string
   title?: string
   value?: number
-  max_value?: number | null
+  grade_max?: number
   coefficient?: number
   grade_type?: GradeType
   date?: string
@@ -81,27 +81,25 @@ const validateGradeData = (data: Partial<GradeInput>): string | null => {
     return 'Le coefficient doit être positif'
   }
 
-  if (data.grade_type !== undefined && !GRADE_TYPES.includes(data.grade_type)) {
-    return 'Le type de note est invalide'
-  }
+  const gradeType = normalizeGradeType(data.grade_type)
 
-  if (data.grade_type === 'points') {
+  if (gradeType === 'points') {
     if (data.value === undefined) {
       return 'La note obtenue est requise'
     }
 
-    const maxValue = data.max_value ?? 20
+    const gradeMax = data.grade_max ?? 20
 
-    if (maxValue <= 0) {
+    if (gradeMax <= 0) {
       return 'La note maximale doit être positive'
     }
 
-    if (data.value < 0 || data.value > maxValue) {
+    if (data.value < 0 || data.value > gradeMax) {
       return 'La note obtenue doit être comprise entre 0 et la note maximale'
     }
   }
 
-  if (data.grade_type === 'percentage') {
+  if (gradeType === 'percentage') {
     if (data.value === undefined) {
       return 'Le pourcentage est requis'
     }
@@ -111,7 +109,7 @@ const validateGradeData = (data: Partial<GradeInput>): string | null => {
     }
   }
 
-  if (data.grade_type === 'letter') {
+  if (gradeType === 'letter') {
     if (data.value === undefined) {
       return 'La note lettre est requise'
     }
@@ -126,6 +124,7 @@ const validateGradeData = (data: Partial<GradeInput>): string | null => {
 
 const buildGradePayload = (data: Partial<GradeInput>): GradePayload => {
   const payload: GradePayload = {}
+  const gradeType = normalizeGradeType(data.grade_type)
 
   if (data.subject_id !== undefined) {
     payload.subject_id = data.subject_id
@@ -143,13 +142,6 @@ const buildGradePayload = (data: Partial<GradeInput>): GradePayload => {
     payload.coefficient = data.coefficient
   }
 
-  if (data.grade_type !== undefined) {
-    payload.grade_type = normalizeGradeType(data.grade_type)
-    payload.max_value = payload.grade_type === 'points' ? (data.max_value ?? 20) : null
-  } else if (data.max_value !== undefined) {
-    payload.max_value = data.max_value
-  }
-
   if (data.date !== undefined) {
     payload.date = data.date
   }
@@ -157,6 +149,9 @@ const buildGradePayload = (data: Partial<GradeInput>): GradePayload => {
   if (data.comment !== undefined) {
     payload.comment = data.comment.trim() || null
   }
+
+  payload.grade_type = gradeType
+  payload.grade_max = data.grade_max ?? 20
 
   return payload
 }
@@ -193,8 +188,7 @@ export function useGrades(): UseGradesReturn {
         const normalizedGrades = (data ?? []).map((grade) => ({
           ...grade,
           grade_type: normalizeGradeType(grade.grade_type),
-          max_value:
-            normalizeGradeType(grade.grade_type) === 'points' ? (grade.max_value ?? 20) : null,
+          grade_max: grade.grade_max ?? 20,
         })) as GradeWithSubject[]
 
         setGrades(normalizedGrades)
@@ -218,7 +212,13 @@ export function useGrades(): UseGradesReturn {
       return false
     }
 
-    const validationError = validateGradeData(data)
+    const completeData: GradeInput = {
+      ...data,
+      grade_type: normalizeGradeType(data.grade_type),
+      grade_max: data.grade_max ?? 20,
+    }
+
+    const validationError = validateGradeData(completeData)
     if (validationError) {
       setError(validationError)
       return false
@@ -227,7 +227,7 @@ export function useGrades(): UseGradesReturn {
     try {
       setError(null)
 
-      const payload = buildGradePayload(data)
+      const payload = buildGradePayload(completeData)
 
       const { error: supabaseError } = await supabase.from('grades').insert({
         user_id: user.id,
@@ -260,7 +260,24 @@ export function useGrades(): UseGradesReturn {
       return false
     }
 
-    const validationError = validateGradeData(data)
+    const existingGrade = grades.find((grade) => grade.id === id)
+    if (!existingGrade) {
+      setError('Note introuvable')
+      return false
+    }
+
+    const mergedData: GradeInput = {
+      subject_id: data.subject_id ?? existingGrade.subject_id,
+      title: data.title ?? existingGrade.title,
+      value: data.value ?? existingGrade.value,
+      grade_max: data.grade_max ?? existingGrade.grade_max ?? 20,
+      coefficient: data.coefficient ?? existingGrade.coefficient,
+      grade_type: data.grade_type ?? existingGrade.grade_type ?? 'points',
+      date: data.date ?? existingGrade.date,
+      comment: data.comment ?? existingGrade.comment ?? undefined,
+    }
+
+    const validationError = validateGradeData(mergedData)
     if (validationError) {
       setError(validationError)
       return false
@@ -269,7 +286,7 @@ export function useGrades(): UseGradesReturn {
     try {
       setError(null)
 
-      const payload = buildGradePayload(data)
+      const payload = buildGradePayload(mergedData)
 
       const { error: supabaseError } = await supabase
         .from('grades')

@@ -60,8 +60,8 @@ export default function Subjects() {
 
   // Composant Skeleton pour l'état de chargement
   const SubjectSkeleton = () => (
-    <Card className="group relative overflow-hidden transition-all duration-200 hover:shadow-lg">
-      <div className="absolute left-0 top-0 bottom-0 w-1 bg-zinc-700" />
+    <Card className="group relative overflow-hidden transition-all duration-200 hover:shadow-lg hover:shadow-violet-900/20">
+      <div className="absolute left-0 top-0 bottom-0 w-1 bg-zinc-700 group-hover:w-2 transition-all duration-200" />
       <CardContent className="p-4">
         <Skeleton className="h-6 w-3/4 mb-2" />
         <Skeleton className="h-4 w-1/2" />
@@ -72,7 +72,7 @@ export default function Subjects() {
   // Composant carte matière
   const SubjectCard = ({ subject }: { subject: Subject }) => (
     <Card 
-      className="group relative overflow-hidden transition-all duration-200 hover:shadow-lg hover:scale-[1.02]"
+      className="group relative overflow-hidden transition-all duration-200 hover:shadow-lg hover:shadow-violet-900/20 hover:scale-[1.02]"
       style={{ borderLeftColor: subject.color, borderLeftWidth: '4px' }}
     >
       {/* Bouton de suppression visible au survol */}

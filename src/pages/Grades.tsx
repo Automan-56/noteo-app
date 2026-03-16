@@ -114,7 +114,7 @@ const createEditFormState = (grade: GradeWithSubject): GradeFormState => {
     title: grade.title,
     gradeType,
     value: gradeType === 'letter' ? '' : getDisplayNumber(grade.value),
-    maxValue: getDisplayNumber(grade.max_value ?? 20),
+    maxValue: getDisplayNumber(grade.grade_max ?? 20),
     letterValue: gradeType === 'letter' ? getLetterFromNumeric(grade.value) : 'A+',
     useCoefficient: grade.coefficient !== 1,
     coefficient: getDisplayNumber(grade.coefficient),
@@ -135,14 +135,14 @@ const buildGradeInput = (form: GradeFormState): GradeInput | null => {
 
   if (form.gradeType === 'points') {
     const earnedValue = Number(form.value)
-    const maxValue = Number(form.maxValue)
+    const gradeMax = Number(form.maxValue)
 
     if (
       !Number.isFinite(earnedValue) ||
-      !Number.isFinite(maxValue) ||
-      maxValue <= 0 ||
+      !Number.isFinite(gradeMax) ||
+      gradeMax <= 0 ||
       earnedValue < 0 ||
-      earnedValue > maxValue
+      earnedValue > gradeMax
     ) {
       return null
     }
@@ -151,7 +151,7 @@ const buildGradeInput = (form: GradeFormState): GradeInput | null => {
       subject_id: form.subjectId,
       title: form.title.trim(),
       value: earnedValue,
-      max_value: maxValue,
+      grade_max: gradeMax,
       coefficient,
       grade_type: 'points',
       date: form.date,
@@ -170,7 +170,7 @@ const buildGradeInput = (form: GradeFormState): GradeInput | null => {
       subject_id: form.subjectId,
       title: form.title.trim(),
       value: percentage,
-      max_value: null,
+      grade_max: 20,
       coefficient,
       grade_type: 'percentage',
       date: form.date,
@@ -182,7 +182,7 @@ const buildGradeInput = (form: GradeFormState): GradeInput | null => {
     subject_id: form.subjectId,
     title: form.title.trim(),
     value: LETTER_TO_NUMERIC[form.letterValue],
-    max_value: null,
+    grade_max: 20,
     coefficient,
     grade_type: 'letter',
     date: form.date,
@@ -198,8 +198,8 @@ const getGradePercentage = (grade: GradeWithSubject): number | null => {
   const gradeType = getNormalizedGradeType(grade.grade_type)
 
   if (gradeType === 'points') {
-    const maxValue = grade.max_value ?? 20
-    return maxValue > 0 ? (grade.value / maxValue) * 100 : null
+    const gradeMax = grade.grade_max ?? 20
+    return gradeMax > 0 ? (grade.value / gradeMax) * 100 : null
   }
 
   if (gradeType === 'percentage') {
@@ -213,7 +213,7 @@ const getGradeDisplay = (grade: GradeWithSubject): string => {
   const gradeType = getNormalizedGradeType(grade.grade_type)
 
   if (gradeType === 'points') {
-    return `${getDisplayNumber(grade.value)}/${getDisplayNumber(grade.max_value ?? 20)}`
+    return `${getDisplayNumber(grade.value)}/${getDisplayNumber(grade.grade_max ?? 20)}`
   }
 
   if (gradeType === 'percentage') {
@@ -227,8 +227,8 @@ const getGradeColorClass = (grade: GradeWithSubject): string => {
   const gradeType = getNormalizedGradeType(grade.grade_type)
 
   if (gradeType === 'points') {
-    const maxValue = grade.max_value ?? 20
-    return maxValue > 0 && grade.value / maxValue >= 0.5 ? 'text-green-500' : 'text-red-500'
+    const gradeMax = grade.grade_max ?? 20
+    return gradeMax > 0 && grade.value / gradeMax >= 0.5 ? 'text-green-500' : 'text-red-500'
   }
 
   if (gradeType === 'percentage') {
@@ -255,7 +255,7 @@ function GradeFormFields({ form, setForm, subjects, isSubmitting }: GradeFormFie
           </SelectTrigger>
           <SelectContent className="bg-zinc-800 border-zinc-700">
             {subjects.map((subject) => (
-              <SelectItem key={subject.id} value={subject.id}>
+              <SelectItem key={subject.id} value={subject.id} className="select-item-text text-white">
                 {subject.name}
               </SelectItem>
             ))}
@@ -295,9 +295,15 @@ function GradeFormFields({ form, setForm, subjects, isSubmitting }: GradeFormFie
             <SelectValue placeholder="Choisir un type de notation" />
           </SelectTrigger>
           <SelectContent className="bg-zinc-800 border-zinc-700">
-            <SelectItem value="points">Points (ex: 15/20)</SelectItem>
-            <SelectItem value="percentage">Pourcentage (ex: 87%)</SelectItem>
-            <SelectItem value="letter">Lettre (ex: A+)</SelectItem>
+            <SelectItem value="points" className="select-item-text text-white">
+              Points (ex: 15/20)
+            </SelectItem>
+            <SelectItem value="percentage" className="select-item-text text-white">
+              Pourcentage (ex: 87%)
+            </SelectItem>
+            <SelectItem value="letter" className="select-item-text text-white">
+              Lettre (ex: A+)
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -382,7 +388,11 @@ function GradeFormFields({ form, setForm, subjects, isSubmitting }: GradeFormFie
             </SelectTrigger>
             <SelectContent className="bg-zinc-800 border-zinc-700">
               {LETTER_OPTIONS.map((letterOption) => (
-                <SelectItem key={letterOption} value={letterOption}>
+                <SelectItem
+                  key={letterOption}
+                  value={letterOption}
+                  className="select-item-text text-white"
+                >
                   {letterOption}
                 </SelectItem>
               ))}
@@ -608,9 +618,15 @@ export default function Grades() {
               <SelectValue placeholder="Filtrer par matière" />
             </SelectTrigger>
             <SelectContent className="bg-zinc-800 border-zinc-700">
-              <SelectItem value="all">Toutes les matières</SelectItem>
+              <SelectItem value="all" className="select-item-text text-white">
+                Toutes les matières
+              </SelectItem>
               {subjects.map((subject) => (
-                <SelectItem key={subject.id} value={subject.id}>
+                <SelectItem
+                  key={subject.id}
+                  value={subject.id}
+                  className="select-item-text text-white"
+                >
                   {subject.name}
                 </SelectItem>
               ))}
@@ -807,10 +823,10 @@ export default function Grades() {
                 </TableHeader>
                 <TableBody>
                   {filteredGrades.map((grade) => (
-                    <TableRow key={grade.id}>
+                    <TableRow key={grade.id} className="hover:bg-zinc-800/50 transition-colors duration-150">
                       <TableCell>
                         <span
-                          className="inline-block px-3 py-1 rounded-full text-white text-sm font-medium"
+                          className="inline-block px-3 py-1 rounded-full text-white text-sm font-medium shadow-sm"
                           style={{ backgroundColor: grade.subjects.color }}
                         >
                           {grade.subjects.name}

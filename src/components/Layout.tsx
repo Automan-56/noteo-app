@@ -30,7 +30,9 @@ export default function Layout() {
       <aside className="w-60 bg-zinc-900 border-r border-zinc-800">
         {/* Logo */}
         <div className="p-6 border-b border-zinc-800">
-          <h1 className="text-2xl font-bold text-white">Noteo</h1>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-violet-400 to-violet-600 bg-clip-text text-transparent">
+            Noteo
+          </h1>
         </div>
 
         {/* Navigation */}
@@ -42,9 +44,9 @@ export default function Layout() {
                   to={item.to}
                   className={({ isActive }) =>
                     cn(
-                      "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors",
+                      "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200",
                       "text-zinc-400 hover:text-white hover:bg-zinc-800",
-                      isActive && "bg-violet-600 text-white hover:bg-violet-700"
+                      isActive && "bg-violet-600 text-white hover:bg-violet-700 border-l-4 border-violet-500"
                     )
                   }
                   end={item.to === "/"}
@@ -61,7 +63,7 @@ export default function Layout() {
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-zinc-800">
           <button
             onClick={handleSignOut}
-            className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-sm font-medium text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+            className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-sm font-medium text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all duration-200"
           >
             <LogOut className="h-5 w-5" />
             Déconnexion
@@ -70,7 +72,7 @@ export default function Layout() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto border-r border-zinc-800">
         <div className="p-8">
           <Outlet />
         </div>
