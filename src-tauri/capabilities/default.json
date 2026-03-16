@@ -1,0 +1,16 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Default capabilities",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    {
+      "identifier": "http:default",
+      "allow": [
+        { "url": "https://dcvsrptbhkasxmbyieib.supabase.co/*" },
+        { "url": "wss://realtime.supabase.co/*" }
+      ]
+    }
+  ]
+}
