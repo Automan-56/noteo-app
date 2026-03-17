@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0f0f13" />
+    <title>Page introuvable | Noteo</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+      :root {
+        color-scheme: dark;
+        --bg: #0f0f13;
+        --panel: rgba(255, 255, 255, 0.04);
+        --panel-border: rgba(255, 255, 255, 0.08);
+        --text: #ffffff;
+        --muted: #cbd5e1;
+        --accent: #8b5cf6;
+        --accent-hover: #7c3aed;
+        --ring: rgba(139, 92, 246, 0.22);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        font-family: "Inter", Arial, sans-serif;
+        background:
+          radial-gradient(circle at top, rgba(139, 92, 246, 0.18), transparent 34%),
+          radial-gradient(circle at bottom, rgba(255, 255, 255, 0.08), transparent 28%),
+          var(--bg);
+        color: var(--text);
+      }
+
+      .shell {
+        width: min(100%, 560px);
+      }
+
+      .card {
+        padding: 40px 32px;
+        border: 1px solid var(--panel-border);
+        border-radius: 28px;
+        background: var(--panel);
+        backdrop-filter: blur(16px);
+        text-align: center;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+      }
+
+      .icon {
+        width: 92px;
+        height: 92px;
+        margin: 0 auto 24px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: var(--ring);
+        border: 1px solid rgba(139, 92, 246, 0.38);
+      }
+
+      .icon span {
+        font-size: 2.6rem;
+        font-weight: 700;
+        line-height: 1;
+        color: #c4b5fd;
+      }
+
+      h1 {
+        margin: 0 0 14px;
+        font-size: clamp(2rem, 5vw, 2.6rem);
+        line-height: 1.1;
+      }
+
+      p {
+        margin: 0 auto;
+        max-width: 420px;
+        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1.7;
+      }
+
+      .link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 52px;
+        margin-top: 30px;
+        padding: 0 24px;
+        border-radius: 999px;
+        background: var(--accent);
+        color: #ffffff;
+        font-weight: 600;
+        text-decoration: none;
+        transition:
+          transform 0.18s ease,
+          background-color 0.18s ease,
+          box-shadow 0.18s ease;
+        box-shadow: 0 14px 32px rgba(139, 92, 246, 0.28);
+      }
+
+      .link:hover {
+        background: var(--accent-hover);
+        transform: translateY(-1px);
+      }
+
+      .link:active {
+        transform: translateY(0);
+      }
+
+      @media (max-width: 640px) {
+        body {
+          padding: 18px;
+        }
+
+        .card {
+          padding: 32px 22px;
+          border-radius: 24px;
+        }
+
+        .icon {
+          width: 82px;
+          height: 82px;
+          margin-bottom: 20px;
+        }
+
+        .link {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="card" aria-labelledby="title">
+        <div class="icon" aria-hidden="true">
+          <span>?</span>
+        </div>
+        <h1 id="title">Page introuvable</h1>
+        <p>
+          Cette page n&apos;existe pas ou n&apos;est plus disponible. Reviens à l&apos;accueil
+          GitHub Pages de Noteo pour continuer.
+        </p>
+        <a class="link" href="./index.html">Retour à l&apos;accueil</a>
+      </section>
+    </main>
+  </body>
+</html>
