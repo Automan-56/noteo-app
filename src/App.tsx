@@ -7,6 +7,7 @@ import { initSupabaseFetch } from "@/lib/supabase";
 import Auth from "@/pages/Auth";
 import Dashboard from "@/pages/Dashboard";
 import Grades from "@/pages/Grades";
+import Profile from "@/pages/Profile";
 import Subjects from "@/pages/Subjects";
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
             <Route index element={<Dashboard />} />
             <Route path="subjects" element={<Subjects />} />
             <Route path="grades" element={<Grades />} />
+            <Route path="profile" element={<Profile />} />
           </Route>
         </Routes>
       </BrowserRouter>

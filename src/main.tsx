@@ -1,3 +1,7 @@
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/600.css";
+import "@fontsource/inter/700.css";
 import {
   Component,
   StrictMode,
@@ -5,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { createRoot } from "react-dom/client";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import App from "./App";
 import "./index.css";
 
@@ -119,7 +124,9 @@ try {
   createRoot(rootElement).render(
     <StrictMode>
       <StartupErrorBoundary>
-        <App />
+        <ThemeProvider>
+          <App />
+        </ThemeProvider>
       </StartupErrorBoundary>
     </StrictMode>,
   );
