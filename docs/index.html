@@ -1,71 +1,621 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0f0f13" />
-    <title>Noteo</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noteo - Prends le contrôle de tes résultats</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-      :root {
-        color-scheme: dark;
-      }
+        /* Custom Properties */
+        :root {
+            --bg-color: #09090b;
+            --card-bg: #18181b;
+            --primary: #8B5CF6;
+            --secondary: #7C3AED;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --font-main: 'Inter', sans-serif;
+            --nav-height: 70px;
+            --transition: all 0.3s ease;
+        }
 
-      * {
-        box-sizing: border-box;
-      }
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-      body {
-        margin: 0;
-        min-height: 100vh;
-        display: grid;
-        place-items: center;
-        padding: 24px;
-        font-family: Inter, Arial, sans-serif;
-        background: #0f0f13;
-        color: #ffffff;
-      }
+        html {
+            scroll-behavior: smooth;
+        }
 
-      main {
-        width: min(100%, 480px);
-        text-align: center;
-      }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
 
-      h1 {
-        margin: 0 0 12px;
-        font-size: clamp(2rem, 4vw, 2.75rem);
-      }
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition);
+        }
 
-      p {
-        margin: 0 0 20px;
-        color: #cbd5e1;
-        line-height: 1.6;
-      }
+        ul {
+            list-style: none;
+        }
 
-      a {
-        display: inline-block;
-        padding: 12px 18px;
-        border-radius: 999px;
-        background: #8b5cf6;
-        color: #ffffff;
-        font-weight: 600;
-        text-decoration: none;
-      }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        section {
+            padding: 100px 0;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--nav-height);
+            background: rgba(9, 9, 11, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 2px;
+            background-color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding-top: 150px;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-size: 4rem;
+            line-height: 1.1;
+            font-weight: 800;
+            margin-bottom: 24px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-content p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            max-width: 540px;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(139, 92, 246, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .reassurance {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 16px;
+        }
+
+        /* Mockup App Window */
+        .mockup {
+            background: #111113;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            aspect-ratio: 16/10;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mockup-header {
+            height: 32px;
+            background: #1c1c1f;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            gap: 6px;
+        }
+
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27c93f; }
+
+        .mockup-body {
+            flex: 1;
+            display: flex;
+        }
+
+        .mockup-sidebar {
+            width: 60px;
+            background: #0c0c0e;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .sidebar-item { height: 12px; background: rgba(255,255,255,0.05); border-radius: 4px; }
+
+        .mockup-main {
+            flex: 1;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .mockup-card {
+            background: #18181b;
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .bar { height: 8px; border-radius: 4px; background: rgba(255,255,255,0.05); }
+        .bar-short { width: 40%; }
+        .bar-mid { width: 70%; }
+        .bar-long { width: 90%; }
+        .bar-violet { background: var(--primary); opacity: 0.6; }
+
+        /* Features Section */
+        .features-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 60px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            border-top: 4px solid var(--primary);
+            transition: var(--transition);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+        }
+
+        /* Stats Section */
+        .stats {
+            background-color: var(--secondary);
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: white;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+        }
+
+        /* Download Section */
+        .download {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .download h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+
+        .download p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+
+        .download-btn {
+            padding: 18px 40px;
+            font-size: 1.2rem;
+        }
+
+        .download-info {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        footer {
+            padding: 60px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+        }
+
+        .footer-logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 16px;
+            display: inline-block;
+        }
+
+        .footer-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+
+        .footer-links a {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .hero {
+                grid-template-columns: 1fr;
+                text-align: center;
+                padding-top: 120px;
+            }
+            .hero-content h1 { font-size: 3rem; }
+            .hero-content p { margin: 0 auto 40px; }
+            .hero-btns { justify-content: center; }
+            .reassurance { justify-content: center; }
+            .features-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: var(--nav-height);
+                left: 0;
+                width: 100%;
+                background: var(--bg-color);
+                flex-direction: column;
+                padding: 40px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            .nav-links.active { display: flex; }
+            .hamburger { display: flex; }
+            
+            .hero-content h1 { font-size: 2.5rem; }
+            .hero-btns { flex-direction: column; }
+            .btn { width: 100%; }
+            
+            .stat-number { font-size: 2.5rem; }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
-  </head>
-  <body>
-    <main>
-      <h1>Bienvenue sur Noteo</h1>
-      <p>
-        Cette page sert de point d&apos;entrée GitHub Pages. Si ton email vient d&apos;être
-        confirmé, tu peux continuer vers la page de confirmation.
-      </p>
-      <a href="./confirm.html">Aller vers la confirmation</a>
-    </main>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="#" class="logo">Noteo 🎓</a>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="#features">Fonctionnalités</a></li>
+                <li><a href="#download" class="btn btn-primary" style="padding: 10px 20px;">Télécharger</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="container hero">
+        <div class="hero-content">
+            <h1>Prends le contrôle <br> <span class="gradient-text">de tes résultats.</span></h1>
+            <p>Noteo est l'application desktop qui t'aide à enregistrer tes notes, suivre ta moyenne et visualiser ta progression — tout en un seul endroit.</p>
+            <div class="hero-btns">
+                <a href="#download" class="btn btn-primary">Télécharger gratuitement</a>
+                <a href="#features" class="btn btn-outline">Voir les fonctionnalités</a>
+            </div>
+            <div class="reassurance">
+                <span>✓ Gratuit</span>
+                <span>✓ Sans publicité</span>
+                <span>✓ Tes données restent privées</span>
+            </div>
+        </div>
+        <div class="mockup">
+            <div class="mockup-header">
+                <div class="dot dot-red"></div>
+                <div class="dot dot-yellow"></div>
+                <div class="dot dot-green"></div>
+            </div>
+            <div class="mockup-body">
+                <div class="mockup-sidebar">
+                    <div class="sidebar-item"></div>
+                    <div class="sidebar-item"></div>
+                    <div class="sidebar-item"></div>
+                    <div class="sidebar-item" style="margin-top: auto;"></div>
+                </div>
+                <div class="mockup-main">
+                    <div class="mockup-card">
+                        <div class="bar bar-short bar-violet"></div>
+                        <div class="bar bar-long"></div>
+                        <div class="bar bar-mid"></div>
+                    </div>
+                    <div class="mockup-card">
+                        <div class="bar bar-short bar-violet"></div>
+                        <div class="bar bar-mid"></div>
+                        <div class="bar bar-long"></div>
+                    </div>
+                    <div class="mockup-card" style="grid-column: span 2;">
+                        <div class="bar bar-short bar-violet"></div>
+                        <div style="display: flex; gap: 10px; align-items: flex-end; height: 40px;">
+                            <div class="bar-violet" style="width: 20px; height: 30%;"></div>
+                            <div class="bar-violet" style="width: 20px; height: 60%;"></div>
+                            <div class="bar-violet" style="width: 20px; height: 45%;"></div>
+                            <div class="bar-violet" style="width: 20px; height: 90%;"></div>
+                            <div class="bar-violet" style="width: 20px; height: 75%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="container" id="features">
+        <h2 class="features-title">Tout ce dont tu as besoin.</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="feature-icon">📚</span>
+                <h3>Gestion des matières</h3>
+                <p>Crée et organise tes matières avec des couleurs personnalisées. Retrouve toutes tes notes en un coup d'œil.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">📊</span>
+                <h3>Tableau de bord intelligent</h3>
+                <p>Visualise ta progression avec des graphiques clairs. Identifie tes points forts et les matières à améliorer.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🔒</span>
+                <h3>Tes données, ta vie privée</h3>
+                <p>Toutes tes notes sont stockées de manière sécurisée. Aucune publicité, aucun tracking.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <div class="stats">
+        <div class="container stats-grid">
+            <div class="stat-item">
+                <span class="stat-number">100%</span>
+                <span class="stat-label">Gratuit</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">3 min</span>
+                <span class="stat-label">pour démarrer</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">0</span>
+                <span class="stat-label">publicité</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Download Section -->
+    <section class="container download" id="download">
+        <h2>Prêt à booster tes résultats ?</h2>
+        <p>Télécharge Noteo gratuitement et commence à suivre tes notes dès aujourd'hui.</p>
+        <a href="https://github.com/Automan-56/noteo-app/releases/latest" class="btn btn-primary download-btn">⬇ Télécharger pour Windows</a>
+        <p class="download-info">Windows 10/11 — 64 bits — Version 2.0.0</p>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <span class="footer-logo">Noteo 🎓</span>
+            <p class="footer-text">© 2026 Noteo — Tous droits réservés.</p>
+            <div class="footer-links">
+                <a href="https://github.com/Automan-56/noteo-app" target="_blank">GitHub</a>
+            </div>
+        </div>
+    </footer>
 
     <script>
-      if (window.location.hash && window.location.hash.includes("access_token")) {
-        window.location.replace("./confirm.html" + window.location.hash);
-      }
+        // Hamburger Menu Logic
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('nav-links');
+
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            // Animate hamburger
+            const spans = hamburger.querySelectorAll('span');
+            spans[0].style.transform = navLinks.classList.contains('active') ? 'rotate(45deg) translate(5px, 5px)' : 'none';
+            spans[1].style.opacity = navLinks.classList.contains('active') ? '0' : '1';
+            spans[2].style.transform = navLinks.classList.contains('active') ? 'rotate(-45deg) translate(7px, -6px)' : 'none';
+        });
+
+        // Close menu on link click
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                const spans = hamburger.querySelectorAll('span');
+                spans.forEach(s => s.style.transform = 'none');
+                spans[1].style.opacity = '1';
+            });
+        });
+
+        // Intersection Observer for Scroll Animations
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
     </script>
-  </body>
+</body>
 </html>
